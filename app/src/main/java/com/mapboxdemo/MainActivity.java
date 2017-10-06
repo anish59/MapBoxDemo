@@ -26,6 +26,7 @@ import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListener;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.telemetry.location.LocationEngine;
+import com.mapbox.services.api.directions.v5.DirectionsCriteria;
 import com.mapbox.services.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.services.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.services.commons.models.Position;
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     LatLng point1 = new LatLng(22.3099771, 73.1754511);
     LatLng point2 = new LatLng(22.3089299, 73.1753277);
     LatLng point3 = new LatLng(22.3092947, 73.1752446);
+    LatLng home = new LatLng(22.259326, 73.197862);
+
     //    private NavigationMapRoute navigationMapRoute;
     private Bundle sis;
     private DirectionsRoute directionRoute;
@@ -102,11 +105,12 @@ public class MainActivity extends AppCompatActivity {
     private void doNavigation() {
         // From Mapbox to The White House
         Position origin = Position.fromLngLat(point1.getLongitude(), point1.getLatitude());
-        Position destination = Position.fromLngLat(point2.getLongitude(), point2.getLatitude());
+        Position destination = Position.fromLngLat(home.getLongitude(), home.getLatitude());
         NavigationRoute.builder()
                 .accessToken(Mapbox.getAccessToken())
                 .origin(origin)
                 .destination(destination)
+                .profile(DirectionsCriteria.PROFILE_DRIVING)
                 .build()
                 .getRoute(new Callback<DirectionsResponse>() {
                     @Override

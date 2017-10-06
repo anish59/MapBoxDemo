@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onRunning(boolean running) {
                             System.out.println("isRunning : " + running);
+                            Toast.makeText(mContext, "isRunning : " + running, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

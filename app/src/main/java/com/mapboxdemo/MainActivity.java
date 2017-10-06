@@ -38,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapboxNavigation navigation;
     private com.mapbox.mapboxsdk.maps.MapView mapView;
     private MapboxMap mMapBoxMap;
@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                                     LocationEngine locationEngine;
                                     locationEngine = LostLocationEngine.getLocationEngine(mContext);
                                     navigation.setLocationEngine(locationEngine);
+
 //                                    ((MockLocationEngine) locationEngine).setRoute(directionRoute);
 //                                    navigation.setLocationEngine(locationEngine);
                                     navigation.startNavigation(directionRoute);
@@ -190,5 +191,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onMapReady(MapboxMap mapboxMap) {
+
+    }
 }
 

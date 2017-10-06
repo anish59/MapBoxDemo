@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets" />
+    <!--mapbox:mapbox_cameraTargetLat="41.885"
+        mapbox:mapbox_cameraTargetLng="-87.679"
+    mapbox:mapbox_cameraTilt="30"
+    mapbox:mapbox_cameraZoom="20"-->
+
+
+    <Button
+        android:id="@+id/btnSetMarker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/set_marker" />
+
+    <Button
+        android:id="@+id/btnSetPolyLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnSetMarker"
+        android:text="@string/set_polyline" />
+
+    <Button
+        android:id="@+id/btnSetPolygon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btnSetPolyLine"
+        android:text="@string/set_polygon" />
+
+    <Button
+        android:id="@+id/btnSetRoute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/btnSetMarker"
+        android:layout_toRightOf="@id/btnSetMarker"
+        android:text="@string/set_route" />
+
+    <Button
+        android:id="@+id/btnGetMyLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnSetRoute"
+        android:layout_toEndOf="@id/btnSetPolyLine"
+        android:layout_toRightOf="@id/btnSetPolyLine"
+        android:text="@string/my_location" />
+
+</RelativeLayout>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MapBoxDemo</string>
+    <string name="com.mapbox.mapboxsdk.accessToken" translatable="false">sk.eyJ1IjoiY2o4OXFldTRoMDZwbjMzcHVsMDFxNXd6dSIsImEiOiJjajhmZzU3aDMwM21zMnhtc3Fna29id2t2In0.hFpBvjOOKZp1Hk8AgUVVug</string>
+    <string name="set_marker">Set Marker</string>
+    <string name="set_polyline">set polyline</string>
+    <string name="set_polygon">set polygon</string>
+    <string name="set_route">Set route</string>
+    <string name="my_location">My Location</string>
+    <string name="set_navigation">Set Navigation</string>
+</resources>

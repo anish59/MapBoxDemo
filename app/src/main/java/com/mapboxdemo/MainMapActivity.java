@@ -59,6 +59,7 @@ public class MainMapActivity extends AppCompatActivity {
     private Button btnSetRoute;
     private DirectionsRoute currentRoute;
     private Button btnGetMyLocation;
+    private Icon icon;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,7 +81,6 @@ public class MainMapActivity extends AppCompatActivity {
         Mapbox.getInstance(this, getString(R.string.com_mapbox_mapboxsdk_accessToken));
         init(savedInstanceState);
         initListeners();
-
 
     }
 

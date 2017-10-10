@@ -8,13 +8,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -65,11 +63,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements MilestoneEventListener, ProgressChangeListener, MapboxMap.OnMapClickListener {
+public class MainActivity2 extends AppCompatActivity implements MilestoneEventListener, ProgressChangeListener, MapboxMap.OnMapClickListener {
     private MapboxNavigation navigation;
-    private com.mapbox.mapboxsdk.maps.MapView mapView;
+    private MapView mapView;
     private MapboxMap mMapBoxMap;
-    private android.widget.Button btnSetNavigation;
+    private Button btnSetNavigation;
     private NavigationMapRoute navigationMapRoute;
     private BuildingPlugin buildingPlugin;
     private Context mContext;
@@ -91,7 +89,9 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
     private boolean isFirstTimeLocal = true;
     private Location prevLocation;
     private Marker bikeMarker;
-    private Icon bikeIcon;
+    private Icon carIcon;
+    private MarkerViewOptions carViewOption;
+    private Location lastUserLocation;
 
 
     @Override
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
                     getDeviceLocation();
                 }
                 IconFactory iconFactory = IconFactory.getInstance(mContext);
-                bikeIcon = iconFactory.fromResource(R.drawable.ic_directions_bike);
+                carIcon = iconFactory.fromResource(R.drawable.ic_car_nav);
 
             }
 
@@ -145,7 +145,8 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
         startRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+//                lastUserLocation=mMapBoxMap.getMyLocation();
+                mMapBoxMap.setMyLocationEnabled(false);
                 MockLocationEngine = new MockLocationEngine(1000, 50, false);
                 mMapBoxMap.setLocationSource(MockLocationEngine);
                 ((MockLocationEngine) MockLocationEngine).setRoute(mockRoute);
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
     }
 
     private void doNavigation() {
+
         // From Mapbox to The White House
         Position origin = Position.fromLngLat(point1.getLongitude(), point1.getLatitude());//set default to my office location, ideally we need to keep device location.
         Position destination = Position.fromLngLat(home.getLongitude(), home.getLatitude());//destination is my home for just instance
@@ -218,12 +220,12 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
                 buildingPlugin.setColor(getResources().getColor(R.color.colorPrimary));
                 buildingPlugin.setVisibility(true);
 //                adding listeners
-                navigation.addMilestoneEventListener(MainActivity.this);
-                navigation.addProgressChangeListener(MainActivity.this);
-                mapboxMap.setOnMapClickListener(MainActivity.this);
+                navigation.addMilestoneEventListener(MainActivity2.this);
+                navigation.addProgressChangeListener(MainActivity2.this);
+                mapboxMap.setOnMapClickListener(MainActivity2.this);
 
 
-                locationLayerPlugin = new LocationLayerPlugin(mapView, mapboxMap, null);
+                locationLayerPlugin = new LocationLayerPlugin(mapView, mapboxMap, null, R.style.CustomLocationLayer);
                 if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
@@ -232,6 +234,8 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
                 mMapBoxMap = mapboxMap;
                 mMapBoxMap.setStyle("mapbox://styles/mapbox/navigation-preview-night-v2");
                 mMapBoxMap.setMyLocationEnabled(true);
+
+
                 if (mMapBoxMap.getMyLocation() != null) {
                     navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap); //initialise
                     getDeviceLocation();
@@ -246,8 +250,8 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
                                         Trigger.gte(TriggerProperty.STEP_DISTANCE_TRAVELED_METERS, 75)
                                 )
                         ).build());
-              /*  LocationEngine locationEngine = LostLocationEngine.getLocationEngine(mContext);
-                navigation.setLocationEngine(locationEngine);*/
+                LocationEngine locationEngine = LostLocationEngine.getLocationEngine(mContext);
+                navigation.setLocationEngine(locationEngine);
 
 
             }
@@ -269,13 +273,9 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
             mMapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000);
 
 
-            MarkerViewOptions marker = new MarkerViewOptions()
-                    .position(new LatLng(mMapBoxMap.getMyLocation()))
-                    .anchor(0.5f, 0.5f)
-                    .flat(true)
-                    .title("Parc del Poblenou")
-                    .snippet("Carrer de Carmen Amaya, Barcelona, España");
-            mMapBoxMap.addMarker(marker);
+            carViewOption = new MarkerViewOptions().icon(carIcon);
+
+
         }
     }
 
@@ -320,14 +320,15 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
     @Override
     public void onProgressChange(Location location, RouteProgress routeProgress) {
         locationLayerPlugin.forceLocationUpdate(location);
-        Timber.d("onProgressChange: fraction of route traveled: %f", routeProgress.fractionTraveled());
+
+     /*   Timber.d("onProgressChange: fraction of route traveled: %f", routeProgress.fractionTraveled());
         System.out.println("onProgressChange: fraction of route traveled: " + routeProgress.fractionTraveled());
 
         if (isFirstTimeLocal) {
-            prevLocation = mMapBoxMap.getMyLocation();
+            prevLocation = location;
             isFirstTimeLocal = false;
         }
-/*
+*//*
 
         if (currentPositionMarker != null) {
             currentPositionMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -335,15 +336,21 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
             MarkerViewOptions options = new MarkerViewOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
             currentPositionMarker = mMapBoxMap.addMarker(options);
         }
-*/
+*//*
 
         if (bikeMarker != null) {
             bikeMarker.remove();
         }
-        bikeMarker = mMapBoxMap.addMarker(new MarkerOptions().position(new LatLng(location)).icon(bikeIcon));
+        float bearing = prevLocation.bearingTo(mMapBoxMap.getMyLocation());
+
+        carViewOption.position(new LatLng(location))
+                .anchor(0.5f, 0.5f)
+                .rotation(bearing)
+                .flat(true);
+        bikeMarker = mMapBoxMap.addMarker(carViewOption);
         ValueAnimator markerAnimator = ValueAnimator.ofObject(new LatLngEvaluator(), (Object[]) new LatLng[]{new LatLng(prevLocation), new LatLng(location)});
-        markerAnimator.setDuration(1000);
-        markerAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        markerAnimator.setDuration(900);
+//        markerAnimator.setRepeatCount(ValueAnimator.INFINITE);
         markerAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         markerAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -354,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
             }
         });
         markerAnimator.start();
-        prevLocation = location;
+        prevLocation = location;*/
     }
 
     @Override
@@ -400,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
                 if (response.body() != null) {
                     if (response.body().getRoutes().size() > 0) {
                         DirectionsRoute route = response.body().getRoutes().get(0);
-                        MainActivity.this.mockRoute = route;
+                        MainActivity2.this.mockRoute = route;
                         navigationMapRoute.addRoute(route);
 
             /*for (LegStep step: route.getLegs().get(0).getSteps()) {
@@ -432,21 +439,21 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
     protected void onStart() {
         super.onStart();
 //        mapView.onStart();
-        if (locationLayerPlugin != null) {
+        /*if (locationLayerPlugin != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             locationLayerPlugin.onStart();
-        }
+        }*/
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         mapView.onStop();
-        if (locationLayerPlugin != null) {
+        /*if (locationLayerPlugin != null) {
             locationLayerPlugin.onStop();
-        }
+        }*/
     }
 
     @Override
@@ -467,36 +474,5 @@ public class MainActivity extends AppCompatActivity implements MilestoneEventLis
             return mLatLng;
         }
     }
-//    private void dropPinEffect(Marker marker1) {
-//        // Handler allows us to repeat a code block after a specified delay
-//        final android.os.Handler handler = new android.os.Handler();
-//        final long start = SystemClock.uptimeMillis();
-//        final long duration = 1500;
-//
-//        // Use the bounce interpolator
-//        final android.view.animation.Interpolator interpolator =
-//                new BounceInterpolator();
-//
-//        // Animate marker with a bounce updating its position every 15ms
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                long elapsed = SystemClock.uptimeMillis() - start;
-//                // Calculate t for bounce based on elapsed time
-//                float t = Math.max(
-//                        1 - interpolator.getInterpolation((float) elapsed
-//                                / duration), 0);
-//                // Set the anchor
-//                marker.setAnchor(0.5f, 1.0f + 14 * t);
-//
-//                if (t > 0.0) {
-//                    // Post this event again 15ms from now.
-//                    handler.postDelayed(this, 15);
-//                } else { // done elapsing, show window
-//                    marker.showInfoWindow();
-//                }
-//            }
-//        });
-//    }
 }
 

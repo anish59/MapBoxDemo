@@ -7,4 +7,5 @@
     <string name="set_route">Set route</string>
     <string name="my_location">My Location</string>
     <string name="set_navigation">Set Navigation</string>
+    <string name="start_route">Start Route</string>
 </resources>
